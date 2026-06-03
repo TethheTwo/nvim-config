@@ -1,0 +1,4 @@
+*.sw?
+Session.vim
+spell/
+lazy-lock.json
