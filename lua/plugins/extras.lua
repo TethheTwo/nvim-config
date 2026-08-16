@@ -13,17 +13,24 @@ return {
     "folke/snacks.nvim",
     priority = 1000,
     lazy = false,
+    keys = {
+      { "<leader>ip", function() require("snacks.image").hover() end, desc = "preview image at cursor" },
+    },
     opts = {
       indent = { enabled = true, char = "│", scope = { enabled = true, char = "│" } },
       notifier = { enabled = true, timeout = 3000 },
       scroll = { enabled = true },
-      statuscolumn = { enabled = true },
+      statuscolumn = { enabled = true, folds = { open = true } },
       words = { enabled = true },
+      image = { enabled = true, doc = { inline = false, float = false } },
     },
+    config = function(_, opts)
+      require("snacks").setup(opts)
+    end,
   },
   {
     "lewis6991/gitsigns.nvim",
-    event = "User FilePost",
+    event = { "BufReadPost", "BufNewFile" },
     opts = {
       signs = {
         add = { text = "▎" },
@@ -84,9 +91,17 @@ return {
   },
   {
     "stevearc/conform.nvim",
-    event = { "BufWritePre" },
-    cmd = { "ConformInfo" },
+    cmd = { "Format", "ConformInfo" },
+    dependencies = { "williamboman/mason.nvim" },
     opts = {
+      ensure_installed = {
+        "prettier",
+        "stylua",
+        "black",
+        "isort",
+        "goimports",
+        "latexindent",
+      },
       formatters_by_ft = {
         lua = { "stylua" },
         python = { "isort", "black" },
@@ -103,11 +118,60 @@ return {
         cpp = { "clang-format" },
         tex = { "latexindent" },
       },
-      format_on_save = {
-        timeout_ms = 500,
-        lsp_fallback = true,
+      formatters = {
+        prettier = {
+          inherit = false,
+          command = "prettier",
+          args = function(_, ctx)
+            return {
+              "--stdin-filepath", ctx.filename,
+              "--tab-width", "4",
+              "--use-tabs=false",
+              "--print-width", "9999",
+            }
+          end,
+        },
+        ["clang-format"] = {
+          prepend_args = { "-style={IndentWidth: 4, TabWidth: 4, UseTab: Never}" },
+        },
       },
     },
+    config = function(_, opts)
+      local conform = require("conform")
+      conform.setup(opts)
+      vim.api.nvim_create_user_command("Format", function(args)
+        if args.count == -1 then
+          conform.format({ async = true, lsp_fallback = true })
+          return
+        end
+        local bufnr = vim.api.nvim_get_current_buf()
+        local original = vim.api.nvim_buf_get_lines(bufnr, 0, -1, false)
+        local sel = vim.list_slice(original, args.line1, args.line2)
+        local names = conform.list_formatters_for_buffer(bufnr)
+        local formatters = conform.resolve_formatters(names, bufnr, false, false)
+        if vim.tbl_isempty(formatters) then
+          conform.format({ async = true, lsp_fallback = true })
+          return
+        end
+        local base_indent = (sel[1] or ""):match("^[ \t]*") or ""
+        local err, output = require("conform.runner").format_lines_sync(
+          bufnr, formatters, 5000,
+          { start = { 1, 0 }, ["end"] = { #sel, 0 } },
+          sel,
+          { exclusive = false, dry_run = false, undojoin = false }
+        )
+        if err or not output or #output == 0 then
+          return
+        end
+        if output[#output] == "" then
+          table.remove(output)
+        end
+        for i, line in ipairs(output) do
+          output[i] = base_indent .. line
+        end
+        vim.api.nvim_buf_set_lines(bufnr, args.line1 - 1, args.line2, false, output)
+      end, { range = true })
+    end,
     init = function()
       vim.o.formatexpr = "v:lua.require'conform'.formatexpr()"
     end,

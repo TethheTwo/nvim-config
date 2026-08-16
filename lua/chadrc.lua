@@ -1,10 +1,22 @@
 local M = {}
 
 M.base46 = {
-  theme = "flexoki-light",
+  theme = "flexoki",
   theme_toggle = { "flexoki", "flexoki-light" },
   transparency = false,
   favorite_themes = { "catppuccin-latte", "default-dark", "everblush", "flexoki", "gruvbox", "gruvchad", "yoru", "flexoki-light" },
+  hl_override = {
+    St_file = { bg = "yellow", fg = "black" },
+    St_file_sep = { bg = "statusline_bg", fg = "yellow" },
+  },
+  hl_add = {
+    St_file_git_sep = { bg = "orange", fg = "yellow" },
+    St_git = { bg = "orange", fg = "black" },
+    St_git_sep = { bg = "statusline_bg", fg = "orange" },
+    St_live_sep = { bg = "statusline_bg", fg = "green" },
+    St_live_icon = { bg = "green", fg = "black" },
+    St_live_text = { bg = "lightbg", fg = "green" },
+  },
 }
 
 M.ui = {
@@ -14,6 +26,61 @@ M.ui = {
     enabled = true,
     theme = "default",
     separator_style = "round",
+    order = { "mode", "file", "git", "%=", "lsp_msg", "%=", "live", "diagnostics", "lsp", "cwd", "cursor" },
+    modules = {
+      mode = function()
+        local utils = require "nvchad.stl.utils"
+        if not utils.is_activewin() then
+          return ""
+        end
+        local modes = utils.modes
+        local m = vim.api.nvim_get_mode().mode
+        local name = modes[m] and modes[m][2]
+        if not name then
+          return ""
+        end
+        local sep_style = M.ui.statusline.separator_style
+        local separators = (type(sep_style) == "table" and sep_style) or utils.separators[sep_style]
+        return "%#St_" .. name .. "Mode#   " .. modes[m][1]
+          .. "%#St_" .. name .. "ModeSep#" .. separators["right"]
+          .. "%#St_" .. name .. "Sep2#" .. separators["right"]
+      end,
+      file = function()
+        local utils = require "nvchad.stl.utils"
+        local x = utils.file()
+        local sep_style = M.ui.statusline.separator_style
+        local separators = (type(sep_style) == "table" and sep_style) or utils.separators[sep_style]
+        local name = " " .. x[2] .. (sep_style == "default" and " " or "")
+        local head = vim.b[utils.stbufnr()] and vim.b[utils.stbufnr()].gitsigns_head
+        local sep = (head and head ~= "") and "%#St_file_git_sep#" or "%#St_file_sep#"
+        return "%#St_file# " .. x[1] .. name .. sep .. separators["right"]
+      end,
+      git = function()
+        local utils = require "nvchad.stl.utils"
+        local head = vim.b[utils.stbufnr()] and vim.b[utils.stbufnr()].gitsigns_head
+        if not head or head == "" then
+          return ""
+        end
+        local content = utils.git()
+        if content == "" then
+          return ""
+        end
+        local sep_style = M.ui.statusline.separator_style
+        local separators = (type(sep_style) == "table" and sep_style) or utils.separators[sep_style]
+        return "%#St_git#" .. content .. "%#St_git_sep#" .. separators["right"]
+      end,
+      live = function()
+        local utils = require "nvchad.stl.utils"
+        local ok, ls = pcall(require, "config.liveserver")
+        if not ok or not ls.is_running() then
+          return ""
+        end
+        local sep_style = M.ui.statusline.separator_style
+        local separators = (type(sep_style) == "table" and sep_style) or utils.separators[sep_style]
+        local root = ls.root:gsub("/+$", ""):match("([^/]+)$") or ls.root
+        return "%#St_live_sep#" .. separators["left"] .. "%#St_live_icon#󰅟 %#St_live_text# " .. ls.port .. " · " .. root .. " "
+      end,
+    },
   },
   tabufline = {
     enabled = true,

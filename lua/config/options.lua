@@ -9,6 +9,7 @@ opt.cursorline = true
 opt.expandtab = true
 opt.foldcolumn = "1"
 opt.foldenable = true
+opt.fillchars = { eob = " ", foldopen = "", foldclose = "" }
 opt.foldlevel = 99
 opt.foldlevelstart = 99
 opt.hidden = true
@@ -21,7 +22,7 @@ opt.pumblend = 10
 opt.pumheight = 10
 opt.relativenumber = true
 opt.scrolloff = 4
-opt.shiftwidth = 2
+opt.shiftwidth = 4
 opt.shortmess:append "c"
 opt.showmode = false
 opt.sidescrolloff = 8
@@ -31,7 +32,8 @@ opt.smartindent = true
 opt.spelllang = { "en" }
 opt.splitbelow = true
 opt.splitright = true
-opt.tabstop = 2
+opt.tabstop = 4
+opt.softtabstop = 4
 opt.termguicolors = true
 opt.timeoutlen = 400
 opt.undofile = true

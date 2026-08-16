@@ -32,7 +32,6 @@ return {
         "html",
         "cssls",
       },
-      automatic_installation = false,
     },
   },
   {
@@ -97,6 +96,14 @@ return {
 
       vim.lsp.config.bashls = {
         single_file_support = true,
+      }
+
+      vim.lsp.config.html = {
+        settings = {
+          html = { validate = true },
+          css = { lint = {} },
+          javascript = { validate = true },
+        },
       }
 
       vim.lsp.enable {

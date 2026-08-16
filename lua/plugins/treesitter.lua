@@ -1,44 +1,31 @@
 return {
   {
     "nvim-treesitter/nvim-treesitter",
-    build = ":TSUpdate | TSInstallAll",
-    event = { "BufReadPost", "BufNewFile" },
-    cmd = { "TSInstall", "TSBufEnable", "TSBufDisable", "TSModuleInfo" },
-    opts = {
-      ensure_installed = {
-        "lua",
-        "vim",
-        "vimdoc",
-        "query",
-        "javascript",
-        "typescript",
-        "python",
-        "rust",
-        "go",
-        "c",
-        "cpp",
-        "json",
-        "yaml",
-        "bash",
-        "html",
-        "css",
-        "latex",
-        "markdown",
-      },
-      auto_install = true,
-      highlight = {
-        enable = true,
-        additional_vim_regex_highlighting = false,
-      },
-      indent = { enable = true },
-      fold = {
-        enable = true,
-      },
-    },
-    config = function(_, opts)
-      require("nvim-treesitter").setup(opts)
+    lazy = false,
+    build = ":TSUpdate",
+    config = function()
+      require("nvim-treesitter").setup()
+
       vim.opt.foldmethod = "expr"
       vim.opt.foldexpr = "v:lua.vim.treesitter.foldexpr()"
+
+      local au = vim.api.nvim_create_augroup("TSAutoInstall", { clear = true })
+      vim.api.nvim_create_autocmd("FileType", {
+        group = au,
+        callback = function()
+          local lang = vim.bo.filetype
+          if not lang or lang == "" then
+            return
+          end
+          local nt = require("nvim-treesitter")
+          if
+            vim.list_contains(nt.get_available(), lang)
+            and not vim.list_contains(nt.get_installed(), lang)
+          then
+            nt.install({ lang })
+          end
+        end,
+      })
     end,
   },
 }

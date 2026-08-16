@@ -40,6 +40,12 @@ map({ "n", "x" }, "<C-s>", ":w<CR>", { desc = "save file" })
 map("n", "<leader>w", ":w<CR>", { desc = "save" })
 map("n", "<leader>q", ":q<CR>", { desc = "quit" })
 
+-- format
+map("n", "<leader>cf", function()
+  require("conform").format({ lsp_fallback = true, timeout_ms = 2000 })
+end, { desc = "format" })
+map("v", "<leader>cf", ":'<,'>Format<CR>", { desc = "format selection" })
+
 -- toggle line wrap
 map("n", "<leader>z", function()
   vim.wo.wrap = not vim.wo.wrap
