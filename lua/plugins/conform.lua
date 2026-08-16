@@ -21,10 +21,10 @@ return {
       },
       formatters = {
         ["clang-format"] = {
-          args = { "-assume-filename", "$FILENAME", "-style={BasedOnStyle: LLVM, ColumnLimit: 9999}" },
+          args = { "-assume-filename", "$FILENAME", "-style={BasedOnStyle: LLVM, ColumnLimit: 9999, IndentWidth: 4, UseTab: Never}" },
         },
         prettier = {
-          args = { "--stdin-filepath", "$FILENAME", "--print-width", "9999" },
+          args = { "--stdin-filepath", "$FILENAME", "--print-width", "9999", "--tab-width", "4" },
         },
         black = {
           args = { "--stdin-filename", "$FILENAME", "--quiet", "--line-length", "9999", "-" },
@@ -44,7 +44,10 @@ return {
           end,
         },
         stylua = {
-          args = { "--search-parent-directories", "--respect-ignores", "--stdin-filepath", "$FILENAME", "--column-width", "9999", "-" },
+          args = { "--search-parent-directories", "--respect-ignores", "--stdin-filepath", "$FILENAME", "--column-width", "9999", "--indent-type", "Spaces", "--indent-width", "4", "-" },
+        },
+        latexindent = {
+          args = { "-", "-y", "defaultIndent: '    '" },
         },
       },
     },
