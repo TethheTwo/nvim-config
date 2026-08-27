@@ -94,14 +94,6 @@ return {
     cmd = { "Format", "ConformInfo" },
     dependencies = { "williamboman/mason.nvim" },
     opts = {
-      ensure_installed = {
-        "prettier",
-        "stylua",
-        "black",
-        "isort",
-        "goimports",
-        "latexindent",
-      },
       formatters_by_ft = {
         lua = { "stylua" },
         python = { "isort", "black" },

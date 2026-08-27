@@ -17,33 +17,21 @@ return {
   {
     "williamboman/mason-lspconfig.nvim",
     dependencies = { "williamboman/mason.nvim" },
-    opts = {
-      ensure_installed = {
-        "lua_ls",
-        "ts_ls",
-        "pyright",
-        "rust_analyzer",
-        "gopls",
-        "texlab",
-        "clangd",
-        "jsonls",
-        "yamlls",
-        "bashls",
-        "html",
-        "cssls",
-      },
-    },
+  },
+  {
+    "j-hui/fidget.nvim",
+    opts = {},
   },
   {
     "neovim/nvim-lspconfig",
     dependencies = {
       "williamboman/mason.nvim",
       "williamboman/mason-lspconfig.nvim",
+      "j-hui/fidget.nvim",
     },
     event = { "BufReadPre", "BufNewFile" },
     config = function()
-      local capabilities = vim.lsp.protocol.make_client_capabilities()
-      capabilities.textDocument.completion.completionItem.snippetSupport = true
+      local capabilities = require("blink.cmp").get_lsp_capabilities(nil, true)
 
       local function on_attach(client, bufnr)
         local bufopts = { buffer = bufnr, silent = true }
@@ -64,24 +52,26 @@ return {
         vim.keymap.set("n", "[d", vim.diagnostic.goto_prev, bufopts)
         vim.keymap.set("n", "]d", vim.diagnostic.goto_next, bufopts)
         vim.keymap.set("n", "<leader>q", vim.diagnostic.setloclist, bufopts)
+
+        if client.server_capabilities.inlayHintProvider then
+          vim.lsp.inlay_hint.enable(bufnr, true)
+        end
+
+        if client.server_capabilities.codeLensProvider then
+          vim.lsp.codelens.refresh()
+          vim.api.nvim_create_autocmd({ "BufEnter", "BufWritePost", "InsertLeave" }, {
+            buffer = bufnr,
+            callback = vim.lsp.codelens.refresh,
+          })
+        end
       end
 
-      vim.lsp.config["*"] = {
+      vim.lsp.config("*", {
         capabilities = capabilities,
         on_attach = on_attach,
-        handlers = {
-          ["textDocument/hover"] = function(err, result, ctx, config)
-            config = vim.tbl_deep_extend("keep", config or {}, { border = "rounded" })
-            vim.lsp.handlers.hover(err, result, ctx, config)
-          end,
-          ["textDocument/signatureHelp"] = function(err, result, ctx, config)
-            config = vim.tbl_deep_extend("keep", config or {}, { border = "rounded" })
-            vim.lsp.handlers.signature_help(err, result, ctx, config)
-          end,
-        },
-      }
+      })
 
-      vim.lsp.config.lua_ls = {
+      vim.lsp.config("lua_ls", {
         settings = {
           Lua = {
             runtime = { version = "LuaJIT" },
@@ -92,19 +82,19 @@ return {
             telemetry = { enable = false },
           },
         },
-      }
+      })
 
-      vim.lsp.config.bashls = {
+      vim.lsp.config("bashls", {
         single_file_support = true,
-      }
+      })
 
-      vim.lsp.config.html = {
+      vim.lsp.config("html", {
         settings = {
           html = { validate = true },
           css = { lint = {} },
           javascript = { validate = true },
         },
-      }
+      })
 
       vim.lsp.enable {
         "lua_ls", "texlab", "ts_ls", "pyright", "rust_analyzer",
@@ -112,16 +102,27 @@ return {
       }
 
       vim.diagnostic.config {
+        virtual_text = { prefix = "" },
         float = { border = "rounded" },
         signs = {
           text = {
             [vim.diagnostic.severity.ERROR] = "󰅙",
-            [vim.diagnostic.severity.WARN] = "",
+            [vim.diagnostic.severity.WARN] = "",
             [vim.diagnostic.severity.HINT] = "󰌵",
             [vim.diagnostic.severity.INFO] = "󰋼",
           },
         },
       }
+
+      vim.api.nvim_create_autocmd("BufWritePre", {
+        pattern = { "*.ts", "*.tsx", "*.lua" },
+        callback = function()
+          vim.lsp.buf.code_action({
+            context = { only = { "source.organizeImports" } },
+            apply = true,
+          })
+        end,
+      })
     end,
   },
 }
