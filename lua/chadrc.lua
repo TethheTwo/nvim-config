@@ -4,7 +4,7 @@ M.base46 = {
   theme = "flexoki",
   theme_toggle = { "flexoki", "flexoki-light" },
   transparency = false,
-  favorite_themes = { "catppuccin-latte", "default-dark", "everblush", "flexoki", "gruvbox", "gruvchad", "yoru", "flexoki-light" },
+  favorite_themes = { "default-dark", "everblush", "flexoki", "gruvbox", "gruvchad", "yoru", "flexoki-light", "hiberbee", "midnight_breeze" },
   hl_override = {
     St_file = { bg = "yellow", fg = "black" },
     St_file_sep = { bg = "statusline_bg", fg = "yellow" },
