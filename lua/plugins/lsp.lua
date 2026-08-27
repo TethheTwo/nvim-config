@@ -98,7 +98,8 @@ return {
 
       vim.lsp.enable {
         "lua_ls", "texlab", "ts_ls", "pyright", "rust_analyzer",
-        "gopls", "clangd", "jsonls", "yamlls", "bashls", "html", "cssls",
+        "clangd", "jsonls", "yamlls", "bashls", "html", "cssls",
+        "marksman", "vimls",
       }
 
       vim.diagnostic.config {
