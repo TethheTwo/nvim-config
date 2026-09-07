@@ -11,15 +11,7 @@ autocmd("TextYankPost", {
   end,
 })
 
-autocmd("BufWritePost", {
-  group = general,
-  pattern = "*.tex",
-  callback = function()
-    local bufname = vim.fn.expand "%:r"
-    vim.fn.system(string.format("lualatex -interaction=nonstopmode %s.tex", bufname))
-    vim.notify(string.format("Compiled %s.tex with lualatex", bufname), vim.log.levels.INFO)
-  end,
-})
+
 
 autocmd("FileType", {
   group = general,
