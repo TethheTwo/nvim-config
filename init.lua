@@ -18,6 +18,7 @@ require "config.options"
 require "config.keymaps"
 require "config.autocmds"
 require "config.liveserver"
+require "config.npmdev"
 require "config.statusline"
 
 require("lazy").setup {
@@ -161,7 +162,7 @@ vim.api.nvim_create_user_command("ThemeSelect", function()
   }
 end, {})
 
-vim.keymap.set("n", "<leader>th", "<cmd>ThemeSelect<CR>", { desc = "select theme" })
+vim.keymap.set("n", "<leader>tc", "<cmd>ThemeSelect<CR>", { desc = "select theme" })
 pcall(vim.keymap.del, "n", "<Tab>")
 pcall(vim.keymap.del, "n", "<S-Tab>")
 vim.keymap.set("n", "<Tab>", ":bnext<CR>", { silent = true, desc = "next buffer" })

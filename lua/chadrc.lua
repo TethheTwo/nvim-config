@@ -145,7 +145,7 @@ M.nvdash = {
     { txt = "󰈭  Find Word", keys = "fw", cmd = "Telescope live_grep" },
     { txt = "  Mason", keys = "cm", cmd = "Mason" },
     { txt = "󰒲  Lazy", keys = "lz", cmd = "Lazy" },
-    { txt = "󱥚  Themes", keys = "th", cmd = "ThemeSelect" },
+    { txt = "󱥚  Themes", keys = "tc", cmd = "ThemeSelect" },
     { txt = "  Quit", keys = "q", cmd = "qa" },
   },
   keymaps = {
@@ -188,7 +188,6 @@ M.nvdash = {
     { keys = "<leader>hd", desc = "Diff this file" },
     { category = "Terminal" },
     { keys = "<C-\\>", desc = "Toggle terminal" },
-    { keys = "<leader>tl", desc = "Lazygit" },
     { category = "Edit" },
     { keys = "<A-j> / <A-k>", desc = "Move line up / down" },
     { keys = "<C-s>", desc = "Save file" },

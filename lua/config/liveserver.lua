@@ -95,7 +95,11 @@ function M.toggle()
 
   M.url = "http://localhost:" .. PORT .. "/"
   if not has_index then
-    M.url = M.url .. vim.fn.fnamemodify(file, ":t")
+    local name = vim.fn.fnamemodify(file, ":t")
+    if name:match("%.tex$") then
+      name = name:gsub("%.tex$", ".pdf")
+    end
+    M.url = M.url .. name
   end
   vim.cmd.redrawstatus()
   vim.notify "LiveServer: ON"

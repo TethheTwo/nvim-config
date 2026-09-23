@@ -31,6 +31,7 @@ Plugins and LSP servers are installed automatically on first launch.
 │   │   ├── keymaps.lua             # Core keymaps (navigation, windows, format, wrap)
 │   │   ├── liveserver.lua          # Live-server toggle module
 │   │   ├── nvdash.lua              # Custom dashboard with extmarks
+│   │   ├── npmdev.lua              # npm run dev toggle module (Vite)
 │   │   ├── options.lua             # Editor options (indent=4, etc.)
 │   │   └── statusline.lua          # Mode-color blending for statusline
 │   └── plugins/
@@ -154,9 +155,9 @@ Leader key: `<Space>`
 | Key | Mode | Action | Source |
 |---|---|---|---|
 | `<C-\>` | n | Toggle terminal | `terminal.lua` |
+| `<leader>th` | n | Terminal (horizontal) | `terminal.lua` |
 | `<leader>tv` | n | Terminal (vertical) | `terminal.lua` |
 | `<leader>tf` | n | Terminal (float) | `terminal.lua` |
-| `<leader>tl` | n | Lazygit | `terminal.lua` |
 
 ### Editing & Formatting
 
@@ -168,7 +169,7 @@ Leader key: `<Space>`
 | `<leader>w` | n | Save | `keymaps.lua` |
 | `<leader>q` | n | Quit | `keymaps.lua` |
 | `<leader>z` | n | Toggle line wrap | `keymaps.lua` |
-| `<leader>th` | n | Theme picker | `init.lua` |
+| `<leader>tc` | n | Theme picker | `init.lua` |
 
 ### Live Server
 
@@ -176,6 +177,8 @@ Leader key: `<Space>`
 |---|---|---|---|
 | `<leader>ls` | n | Toggle live server (port 8080) | `liveserver.lua` |
 | `<leader>lS` | n | Open live server in browser | `liveserver.lua` |
+| `<leader>nd` | n | Toggle `npm run dev` (Vite) in background | `npmdev.lua` |
+| `<leader>nD` | n | Open npm dev server in browser | `npmdev.lua` |
 
 ### Completion (Insert)
 
@@ -280,7 +283,7 @@ In HTML: `<div>` and `</div>` are paired as one container; `<`/`>` get the angle
 
 Theme: **Flexoki** (`flexoki.lua` in base46)
 
-Toggle: `<leader>th` (opens a picker with favorite-star support on `<Tab>`, confirms on `<CR>`)
+Picker: `<leader>tc` (opens a picker with favorite-star support on `<Tab>`, confirms on `<CR>`)
 
 Favorite themes:
 default-dark, everblush, flexoki, gruvbox, gruvchad, yoru, flexoki-light, hiberbee, midnight_breeze
@@ -304,9 +307,11 @@ Fully reimplemented with extmarks: ASCII "TethheTwo" header, 7 action buttons (F
 
 Mode-colored statusline with rounded separators. Custom modules: mode icon, file (with git info), git branch, live server indicator. Mode-to-color blending handled in `lua/config/statusline.lua`.
 
-### Live Server
+### Dev Server (live-server & npm)
 
-Toggle a `live-server` dev server on port 8080 (`<leader>ls`). Auto-finds root by looking for `index.html`. Open in browser with `<leader>lS`.
+`live-server` (port 8080, `<leader>ls`): auto-finds root by looking for `index.html`; `main.tex` files open as the compiled `main.pdf`. Open in browser with `<leader>lS`.
+
+`npm run dev` (`<leader>nd`, `npmdev.lua`): finds the project root via `package.json`, runs the dev server detached, reads the Vite port from stdout, and notifies the URL (e.g. `localhost:5173`, or the next free port if busy). Open in browser with `<leader>nD`.
 
 ### LaTeX
 
@@ -327,4 +332,3 @@ Smear-cursor animation (default settings) enabled globally.
 | Key | Mapping 1 | Mapping 2 | Winner |
 |---|---|---|---|
 | `<leader>q` | `:q<CR>` (global, `keymaps.lua`) | `vim.diagnostic.setloclist` (buffer-local, `lsp.lua`) | LSP in LSP buffers, quit elsewhere |
-| `<leader>th` | `ThemeSelect` (`init.lua`) | `ToggleTerm direction=horizontal` (`terminal.lua`) | ThemeSelect (loads last) |

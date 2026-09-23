@@ -31,7 +31,6 @@ return {
       { "<leader>th", "<cmd>ToggleTerm direction=horizontal<CR>", desc = "terminal horizontal" },
       { "<leader>tv", "<cmd>ToggleTerm direction=vertical<CR>", desc = "terminal vertical" },
       { "<leader>tf", "<cmd>ToggleTerm direction=float<CR>", desc = "terminal float" },
-      { "<leader>tl", "<cmd>TermExec cmd='lazygit'<CR>", desc = "lazygit" },
     },
   },
 }
